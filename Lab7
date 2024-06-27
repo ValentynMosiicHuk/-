@@ -1,0 +1,53 @@
+// Memento.h 
+#pragma once 
+#include <string> 
+class Memento { 
+private: 
+std::string state; 
+public: 
+Memento(const std::string& state) : state(state) {} 
+std::string getState() const { return state; } 
+};
+
+// Originator.h 
+#pragma once 
+#include "Memento.h" 
+#include <string> 
+class Originator { 
+private: 
+std::string state; 
+public: 
+void setState(const std::string& state) { 
+this->state = state; 
+} 
+std::string getState() const { 
+return state; 
+} 
+Memento saveStateToMemento() const { 
+return Memento(state); 
+} 
+void getStateFromMemento(const Memento& memento) { 
+state = memento.getState(); 
+} 
+};
+
+
+#include "Originator.h" 
+#include "Caretaker.h" 
+#include <iostream> 
+
+int main() { 
+Originator originator; 
+Caretaker caretaker;
+originator.setState("State1");
+caretaker.addMemento(originator.saveStateToMemento());
+originator.setState("State2");
+caretaker.addMemento(originator.saveStateToMemento());
+originator.setState("State3"); 
+std::cout << "Current State: " << originator.getState() << std::endl;
+originator.getStateFromMemento(caretaker.getMemento(1)); 
+std::cout << "Restored to State: " << originator.getState() << std::endl;
+originator.getStateFromMemento(caretaker.getMemento(0)); 
+std::cout << "Restored to State: " << originator.getState() << std::endl; 
+return 0; 
+}
