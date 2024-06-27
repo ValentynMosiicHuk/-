@@ -1,0 +1,88 @@
+// Component.h 
+#pragma once 
+
+class Component { 
+public: 
+virtual ~Component() {} 
+virtual void operation() const = 0; 
+};
+
+// ConcreteComponent.h 
+#pragma once 
+#include "Component.h" 
+#include <iostream> 
+class ConcreteComponent : public Component { 
+public: 
+void operation() const override { 
+std::cout << "ConcreteComponent operation\n"; 
+} 
+};
+
+// ConcreteDecorator.h 
+#pragma once 
+#include "Decorator.h" 
+#include <iostream> 
+class ConcreteDecorator : public Decorator { 
+public: 
+ConcreteDecorator(Component* component) : Decorator(component) {}
+void operation() const override { 
+component->operation(); 
+addedBehavior(); 
+} 
+void addedBehavior() const { 
+std::cout << "ConcreteDecorator added behavior\n"; 
+} 
+};
+
+
+#include "ConcreteComponent.h" 
+#include "ConcreteDecorator.h" 
+int main() { 
+Component* component = new ConcreteComponent(); 
+Component* decoratedComponent = new ConcreteDecorator(component);
+decoratedComponent->operation(); 
+delete decoratedComponent; 
+return 0; 
+}
+
+
+// Target.h 
+#pragma once 
+class Target { 
+public: 
+virtual ~Target() {} 
+virtual void request() const = 0; 
+};
+
+// Adaptee.h 
+#pragma once 
+#include <iostream> 
+class Adaptee { 
+public: 
+void specificRequest() const { 
+std::cout << "Adaptee specific request\n"; 
+} 
+};
+
+// Adapter.h 
+#pragma once 
+#include "Target.h" 
+#include "Adaptee.h" 
+class Adapter : 
+public Target { 
+private: 
+Adaptee* adaptee; public: Adapter(Adaptee* adaptee) : adaptee(adaptee) {}
+void request() const override { 
+adaptee->specificRequest(); 
+} 
+};
+
+#include "Adapter.h" 
+int main() { 
+Adaptee* adaptee = new Adaptee(); 
+Target* target = new Adapter(adaptee); 
+target->request(); 
+delete target; 
+delete adaptee; 
+return 0; 
+}
