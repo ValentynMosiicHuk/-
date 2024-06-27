@@ -1,0 +1,47 @@
+#include "Iterator.h" 
+#include <vector> 
+#include "ConcreteCollection.h" 
+#include <iostream>
+
+template <typename T> 
+class ConcreteIterator : public Iterator<T> { 
+  private: 
+    const std::vector<T>& collection;
+   size_t index; 
+public: 
+ConcreteIterator(const std::vector<T>& collection) : collection(collection), index(0) {} 
+bool hasNext() override { 
+return index < collection.size(); 
+} 
+  T next() override { 
+  return collection[index++]; 
+} 
+};
+ 
+template <typename T> 
+class ConcreteCollection : public IterableCollection<T> { 
+private: 
+  std::vector<T> items;
+public: 
+  void addItem(const T& item) { 
+items.push_back(item); 
+} 
+  Iterator<T>* createIterator() const override {
+return new ConcreteIterator<T>(items); 
+} 
+};
+
+int main() { 
+  ConcreteCollection<int> collection; 
+  collection.addItem(1); 
+  collection.addItem(2); 
+  collection.addItem(3); 
+
+Iterator<int>* it = collection.createIterator(); 
+  while (it->hasNext()) {
+    std::cout << it->next() << " "; 
+} 
+  std::cout << std::endl; 
+  delete it; 
+return 0; 
+}
