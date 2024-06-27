@@ -1,0 +1,82 @@
+// Expression.h 
+#pragma once 
+#include <string> 
+#include <map> 
+class Context; 
+class Expression { 
+public: 
+virtual ~Expression() {} 
+virtual int interpret(const Context& context) const = 0; 
+};
+
+// Context.h 
+#pragma once 
+#include <string>
+ #include <map> 
+class Context { 
+private: 
+std::map<std::string, int> variables; 
+public: 
+void setVariable(const std::string& name, int value) { 
+variables[name] = value; 
+} 
+int getVariable(const std::string& name) const { 
+return variables.at(name); 
+} 
+};
+
+// NumberExpression.h 
+#pragma once 
+#include "Expression.h" 
+class NumberExpression : public Expression { 
+private: 
+int number; 
+public: 
+NumberExpression(int number) : number(number) {} 
+int interpret(const Context& context) const override { 
+return number; 
+} 
+};
+
+// AddExpression.h 
+#pragma once
+ #include "Expression.h" 
+class AddExpression : public Expression { 
+private: 
+const Expression* left; 
+const Expression* right; 
+public: 
+AddExpression(const Expression* left, const Expression* right) : left(left), right(right) {} 
+~AddExpression() { 
+delete left; 
+delete right; 
+} 
+int interpret(const Context& context) const override { 
+return left->interpret(context) + right->interpret(context); 
+} 
+};
+
+
+#include "Context.h" 
+#include "NumberExpression.h" 
+#include "VariableExpression.h" 
+#include "AddExpression.h" 
+#include <iostream> 
+
+int main() { 
+Context context; 
+context.setVariable("x", 5); 
+context.setVariable("y", 10); 
+
+const Expression* expression = new AddExpression( 
+new VariableExpression("x"), 
+new AddExpression( 
+new NumberExpression(2), 
+new VariableExpression("y") 
+) 
+); 
+int result = expression->interpret(context); 
+std::cout << "Result: " << result << std::endl; 
+delete expression; 
+return 0; 
+      }
